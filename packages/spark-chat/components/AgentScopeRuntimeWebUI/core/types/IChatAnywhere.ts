@@ -32,6 +32,10 @@ export interface IAgentScopeRuntimeWebUIAPIOptions {
     biz_params?: IAgentScopeRuntimeWebUIInputData['biz_params'];
   }) => Promise<Response>;
 
+  cancel?: (data: {
+    session_id: string;
+  }) => void;
+
   enableHistoryMessages?: boolean;
   
   responseParser?: (
@@ -428,7 +432,7 @@ export interface IAgentScopeRuntimeWebUIInputData {
    * @description 文件列表
    * @descriptionEn File list
    */
-  fileList?: UploadProps['fileList'];
+  fileList?: (UploadProps['fileList'][number] & { file_id?: string })[];
   /**
    * @description 业务参数
    * @descriptionEn Business parameters
