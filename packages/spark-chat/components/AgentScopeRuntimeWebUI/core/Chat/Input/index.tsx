@@ -25,7 +25,9 @@ export default function Input(props: InputProps) {
     beforeUI,
     afterUI,
     scalable = true,
-    attachments
+    attachments,
+    prefix,
+    allowSpeech,
   } = senderOptions || {};
 
   const {
@@ -61,12 +63,14 @@ export default function Input(props: InputProps) {
         value={content}
         prefix={<>
           {uploadIconButton}
+          {prefix}
         </>}
         header={uploadFileListHeader}
         onChange={setContent}
         maxLength={maxLength}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
+        allowSpeech={allowSpeech}
       />
       {afterUI}
     </div>

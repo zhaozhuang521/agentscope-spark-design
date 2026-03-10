@@ -228,6 +228,16 @@ export interface IAgentScopeRuntimeWebUISenderOptions {
    * @descriptionEn Attachments configuration
    */
   attachments?: IAgentScopeRuntimeWebUISenderAttachmentsOptions;
+  /**
+   * @description 输入框前缀 UI，显示在输入框底部操作栏
+   * @descriptionEn Prefix UI displayed in the bottom action bar of the input
+   */
+  prefix?: React.ReactNode | React.ReactNode[];
+  /**
+   * @description 是否支持语音输入
+   * @descriptionEn Whether to allow speech input
+   */
+  allowSpeech?: boolean;
 }
 
 /**
