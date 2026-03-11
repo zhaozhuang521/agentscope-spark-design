@@ -33,7 +33,9 @@
     "llms:build": "LLM=true dumi build",
     "prepare": "dumi setup",
     "src:build": "father build",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "release:beta": "node publish-beta.js",
+    "release": "node publish.js"
   },
   "commitlint": {
     "extends": [
