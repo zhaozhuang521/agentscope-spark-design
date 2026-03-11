@@ -1,8 +1,9 @@
 import { Bubble, CodeHighlighter, Mermaid } from '@ant-design/x';
 import { type ComponentProps } from '@ant-design/x-markdown';
 import { useProviderContext } from "@agentscope-ai/chat";
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { SparkCopyLine, SparkDownloadLine, SparkTrueLine } from '@agentscope-ai/icons';
+import { copy } from '../../../Util/copy';
 
 const LANG_EXT_MAP: Record<string, string> = {
   javascript: 'js', typescript: 'ts', python: 'py', ruby: 'rb',
@@ -25,6 +26,7 @@ const Code: React.FC<ComponentProps> = (props) => {
 
 function CodeHeader({ lang, content }: { lang: string, content: string }) {
   const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('code-header');
 
@@ -39,24 +41,14 @@ function CodeHeader({ lang, content }: { lang: string, content: string }) {
     URL.revokeObjectURL(url);
   }, [lang, content]);
 
-  const handleCopy = useCallback(async () => {
-    try {
-      if (window.isSecureContext && navigator.clipboard) {
-        await navigator.clipboard.writeText(content);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = content;
-        textarea.style.cssText = 'position:fixed;left:-9999px';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
+  const handleCopy = useCallback(() => {
+    copy(content).then(() => {
+      clearTimeout(timer.current);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
-    } catch {
+      timer.current = setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
       console.warn('Copy failed');
-    }
+    });
   }, [content]);
 
   return <div className={prefixCls}>
