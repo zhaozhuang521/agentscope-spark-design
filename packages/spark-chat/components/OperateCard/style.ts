@@ -178,7 +178,7 @@ export default createGlobalStyle`
     }
 
     &-title {
-      font-size: 12px;
+      font-size: 14px;
       color: ${(p) => p.theme.colorText};
     }
 

@@ -22,6 +22,11 @@ export default createGlobalStyle`
     filter: blur(2px);
     animation: light_sweeping 1.5s infinite linear;
   }
+
+  ~ .${(p) => p.theme.prefixCls}-bubble-content-wrapper {
+    width: 0;
+    flex: 1;
+  }
 }
 
 @keyframes light_sweeping {
