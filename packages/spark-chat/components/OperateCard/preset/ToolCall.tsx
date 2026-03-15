@@ -1,7 +1,7 @@
 
 import { OperateCard, useProviderContext } from '@agentscope-ai/chat';
 import { SparkCopyLine, SparkLoadingLine, SparkToolLine, SparkTrueLine } from '@agentscope-ai/icons';
-import { CodeBlock, CollapsePanel, IconButton } from '@agentscope-ai/design';
+import { CodeBlock, IconButton } from '@agentscope-ai/design';
 import { copy } from '../../Util/copy';
 import { useRef, useState } from 'react';
 
@@ -14,16 +14,19 @@ function Block(props: {
   const prefixCls = getPrefixCls('operate-card');
   const contentString = typeof props.content === 'string' ? props.content : JSON.stringify(props.content);
   const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const timer = useRef<NodeJS.Timeout | null>(null);
 
   return <div className={`${prefixCls}-tool-call-block`}>
-    <CollapsePanel
-      title={
-        props.title
-      }
-      // collapsedHeight={100}
-      // expandOnPanelClick={true}
-      extra={
+    <div
+      className={`${prefixCls}-tool-call-block-header`}
+      onClick={() => setExpanded(prev => !prev)}
+    >
+      <span className={`${prefixCls}-tool-call-block-title`}>{props.title}</span>
+      <div
+        className={`${prefixCls}-tool-call-block-extra`}
+        onClick={e => e.stopPropagation()}
+      >
         <IconButton
           size="small"
           style={{ marginRight: '-6px' }}
@@ -40,10 +43,13 @@ function Block(props: {
               console.warn('Copy failed');
             });
           }} />
-      }
-    >
-      <CodeBlock language={'json'} value={contentString} readOnly={true} />
-    </CollapsePanel>
+      </div>
+    </div>
+    {expanded && (
+      <div className={`${prefixCls}-tool-call-block-content`}>
+        <CodeBlock language={'json'} value={contentString} readOnly={true} />
+      </div>
+    )}
   </div>
 }
 
