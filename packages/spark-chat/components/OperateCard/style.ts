@@ -3,6 +3,17 @@ import { createGlobalStyle } from 'antd-style';
 export default createGlobalStyle`
 .${(p) => p.theme.prefixCls}-operate-card {
   width: 100%;
+
+  &-simple-collapsed {
+    width: auto;
+    display: inline-flex;
+    background-color: transparent;
+
+    .${(p) => p.theme.prefixCls}-operate-card-header {
+      padding: 0;
+      height: auto;
+    }
+  }
   border-radius: ${(p) => p.theme.borderRadiusLG}px;
   overflow: hidden;
   background-color: ${(p) => p.theme.colorFillTertiary};
@@ -188,7 +199,7 @@ export default createGlobalStyle`
     }
 
     &-content {
-      max-height: 100px;
+      max-height: 128px;
       overflow-y: auto;
     }
   }

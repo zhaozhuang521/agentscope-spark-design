@@ -47,7 +47,8 @@ function Block(props: {
     </div>
     {expanded && (
       <div className={`${prefixCls}-tool-call-block-content`}>
-        <CodeBlock language={'json'} value={contentString} readOnly={true} />
+        {/* @ts-ignore */}
+        <CodeBlock language={'json'} value={contentString} readOnly={true} basicSetup={{ lineNumbers: false, foldGutter: false }} />
       </div>
     )}
   </div>
@@ -89,11 +90,17 @@ export interface IToolCallProps {
    * @default false
    */
   loading?: boolean;
+  /**
+   * @description 是否简单模式，该模式下收起态没有背景色
+   * @descriptionEn Whether is simple mode, the mode is collapsed without background color
+   * @default false
+   */
+  simple?: boolean;
 }
 
 export default function (props: IToolCallProps) {
 
-  const { title = 'Call Tool', subTitle, defaultOpen = true, loading = false } = props;
+  const { title = 'Call Tool', subTitle, defaultOpen = true, loading = false, simple = false } = props;
 
   return <OperateCard
 
@@ -101,6 +108,7 @@ export default function (props: IToolCallProps) {
       icon: loading ? <SparkLoadingLine spin /> : <SparkToolLine />,
       title: title,
       description: subTitle,
+      simple: simple,
     }}
 
     body={{
