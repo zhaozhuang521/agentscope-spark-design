@@ -24,6 +24,7 @@ export default function () {
         foo: 'bar',
         baz: 'qux',
       }}
+      outputBlock={{ language: 'text' }}
       output={{
         result: 'result',
       }}

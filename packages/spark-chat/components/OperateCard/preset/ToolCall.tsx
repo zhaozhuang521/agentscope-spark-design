@@ -10,10 +10,11 @@ function Block(props: {
   title: string;
   content: string | Record<string, any>
   expandEnabled?: boolean;
+  language?: 'json' | 'text';
 }) {
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('operate-card');
-  const { expandEnabled = true } = props;
+  const { expandEnabled = true, language = 'json' } = props;
   const contentString = typeof props.content === 'string' ? props.content : JSON.stringify(props.content);
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(expandEnabled === true ? false : true);
@@ -54,7 +55,7 @@ function Block(props: {
     {expanded && (
       <div className={`${prefixCls}-tool-call-block-content`}>
         {/* @ts-ignore */}
-        <CodeBlock language={'json'} value={contentString} readOnly={true} basicSetup={{ lineNumbers: false, foldGutter: false }} />
+        <CodeBlock language={language} value={contentString} readOnly={true} basicSetup={{ lineNumbers: false, foldGutter: false }} />
       </div>
     )}
   </div>
@@ -102,6 +103,8 @@ export interface IToolCallProps {
    * @default false
    */
   simple?: boolean;
+  outputBlock?: { language?: 'json' | 'text' }
+  inputBlock?: { language?: 'json' | 'text' }
 }
 
 export default function (props: IToolCallProps) {
@@ -120,8 +123,8 @@ export default function (props: IToolCallProps) {
     body={{
       defaultOpen: defaultOpen,
       children: <OperateCard.LineBody>
-        <Block title="Input" content={props.input} expandEnabled={!simple} />
-        <Block title="Output" content={props.output} expandEnabled={!simple} />
+        <Block title="Input" content={props.input} expandEnabled={!simple} language={props.inputBlock?.language} />
+        <Block title="Output" content={props.output} expandEnabled={!simple} language={props.outputBlock?.language} />
       </OperateCard.LineBody>
     }}
   >
