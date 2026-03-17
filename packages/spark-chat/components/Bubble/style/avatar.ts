@@ -16,12 +16,20 @@ export default createGlobalStyle`
   &-loading .${(p) => p.theme.prefixCls}-avatar::after {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: 0px;
     border-radius: inherit;
-    border-width: 1px 1px 1px 1px;
-    border-style: solid;
-    border-color: ${(p) => p.theme.colorTextSecondary};
-    border-left-color: transparent;
+    padding: 1px;
+    background: conic-gradient(
+      ${(p) => p.theme.colorBorder},
+      ${(p) => p.theme.colorBorderSecondary},
+      transparent,
+      ${(p) => p.theme.colorBorder}
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
     pointer-events: none;
     z-index: 1;
     animation: avatar-border-spin 1.5s linear infinite;
