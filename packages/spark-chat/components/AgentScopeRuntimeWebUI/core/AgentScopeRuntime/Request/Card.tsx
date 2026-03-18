@@ -49,10 +49,10 @@ export default function AgentScopeRuntimeRequestCard(props: {
         if (!audioCard) {
           p.push({
             code: 'Audios',
-            data: [{ src: c.audio_url }],
+            data: [{ src: c.audio_url || c.data }],
           });
         } else {
-          audioCard.data.push({ src: c.audio_url });
+          audioCard.data.push({ src: c.audio_url || c.data });
         }
       }
 

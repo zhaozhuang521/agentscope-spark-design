@@ -61,7 +61,8 @@ export interface IImageContent extends IBaseContent {
 
 export interface IAudioContent extends IBaseContent {
   type: AgentScopeRuntimeContentType.AUDIO,
-  audio_url: string;
+  data?: string;
+  audio_url?: string;
   format?: string;
 }
 
