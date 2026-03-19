@@ -58,6 +58,7 @@ class AgentScopeRuntimeRequestBuilder {
     return {
       type: AgentScopeRuntimeContentType.AUDIO,
       audio_url: audioFile.response?.url,
+      data: audioFile.response?.url,
       format: audioFile.type?.replace('audio/', ''),
       status: AgentScopeRuntimeRunStatus.Created,
     }
