@@ -7,6 +7,7 @@ import { ChatAnywhereMessagesContext } from './ChatAnywhereMessagesContext';
 import { useChatAnywhereOptions } from './ChatAnywhereOptionsContext';
 import ReactDOM from 'react-dom';
 import { useAsyncEffect } from 'ahooks';
+import { emit } from './useChatAnywhereEventEmitter';
 
 
 export const ChatAnywhereSessionsContext = createContext<IAgentScopeRuntimeWebUISessionsContext>({
@@ -95,13 +96,18 @@ export const useChatAnywhereSessions = () => {
       setMessages([])
     })
 
-    const messages = (await options.api.getSession(currentSessionId))?.messages || [];
+    const session = await options.api.getSession(currentSessionId);
+    const messages = session?.messages || [];
     setMessages(messages.map(item => {
       return {
         ...item,
         history: true,
       }
     }));
+
+    if (session?.generating) {
+      emit({ type: 'handleReconnect', data: { session_id: currentSessionId } });
+    }
   }, [currentSessionId]);
 
 
