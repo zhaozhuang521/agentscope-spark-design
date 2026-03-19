@@ -134,12 +134,13 @@ export default function useChatController() {
     await reconnect(sessionId);
   }, [messageHandler, reconnect, setLoading]);
 
-  // 监听会话切换，重置状态
+  // 监听会话切换，断开当前 SSE 连接（不通知后端取消）并重置状态
   useEffect(() => {
+    currentQARef.current.abortController?.abort();
     currentQARef.current = {
       request: undefined,
       response: undefined,
-      abortController: undefined
+      abortController: undefined,
     };
   }, [currentSessionId]);
 
