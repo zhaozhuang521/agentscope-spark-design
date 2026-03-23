@@ -18,6 +18,7 @@ export interface IOperateCardProps {
     icon: React.ReactNode;
     title: React.ReactNode | string;
     description?: React.ReactNode | string;
+    simple?: boolean;
   },
   /**
    * @description 内容配置
@@ -50,7 +51,9 @@ function OperateCard(props: IOperateCardProps) {
 
   return <>
     <Style />
-    <div className={prefixCls}>
+    <div className={classNames(prefixCls, {
+      [`${prefixCls}-simple-collapsed`]: props.header.simple && !open
+    })}>
       <div className={classNames(`${prefixCls}-header`, props.header.className, {
         [`${prefixCls}-header-has-body`]: props.body
       })} onClick={() => {

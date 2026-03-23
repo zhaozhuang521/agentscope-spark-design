@@ -1,7 +1,7 @@
 
 import { OperateCard, useProviderContext } from '@agentscope-ai/chat';
 import { SparkCopyLine, SparkLoadingLine, SparkToolLine, SparkTrueLine } from '@agentscope-ai/icons';
-import { CodeBlock, CollapsePanel, IconButton } from '@agentscope-ai/design';
+import { CodeBlock, IconButton } from '@agentscope-ai/design';
 import { copy } from '../../Util/copy';
 import { useRef, useState } from 'react';
 
@@ -9,21 +9,31 @@ import { useRef, useState } from 'react';
 function Block(props: {
   title: string;
   content: string | Record<string, any>
+  expandEnabled?: boolean;
+  language?: 'json' | 'text';
 }) {
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('operate-card');
+  const { expandEnabled = true, language = 'json' } = props;
   const contentString = typeof props.content === 'string' ? props.content : JSON.stringify(props.content);
   const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(expandEnabled === true ? false : true);
   const timer = useRef<NodeJS.Timeout | null>(null);
 
   return <div className={`${prefixCls}-tool-call-block`}>
-    <CollapsePanel
-      title={
-        props.title
-      }
-      // collapsedHeight={100}
-      // expandOnPanelClick={true}
-      extra={
+    <div
+      className={`${prefixCls}-tool-call-block-header`}
+      onClick={() => {
+        if (expandEnabled === true) {
+          setExpanded(prev => !prev);
+        }
+      }}
+    >
+      <span className={`${prefixCls}-tool-call-block-title`}>{props.title}</span>
+      <div
+        className={`${prefixCls}-tool-call-block-extra`}
+        onClick={e => e.stopPropagation()}
+      >
         <IconButton
           size="small"
           style={{ marginRight: '-6px' }}
@@ -40,10 +50,14 @@ function Block(props: {
               console.warn('Copy failed');
             });
           }} />
-      }
-    >
-      <CodeBlock language={'json'} value={contentString} readOnly={true} />
-    </CollapsePanel>
+      </div>
+    </div>
+    {expanded && (
+      <div className={`${prefixCls}-tool-call-block-content`}>
+        {/* @ts-ignore */}
+        <CodeBlock language={language} value={contentString} readOnly={true} basicSetup={{ lineNumbers: false, foldGutter: false }} />
+      </div>
+    )}
   </div>
 }
 
@@ -83,11 +97,19 @@ export interface IToolCallProps {
    * @default false
    */
   loading?: boolean;
+  /**
+   * @description 是否简单模式，该模式下收起态没有背景色，同时子级内容默认展开
+   * @descriptionEn Whether is simple mode, the mode is collapsed without background color, and the child content is expanded by default
+   * @default false
+   */
+  simple?: boolean;
+  outputBlock?: { language?: 'json' | 'text' }
+  inputBlock?: { language?: 'json' | 'text' }
 }
 
 export default function (props: IToolCallProps) {
 
-  const { title = 'Call Tool', subTitle, defaultOpen = true, loading = false } = props;
+  const { title = 'Call Tool', subTitle, defaultOpen = true, loading = false, simple = false } = props;
 
   return <OperateCard
 
@@ -95,13 +117,14 @@ export default function (props: IToolCallProps) {
       icon: loading ? <SparkLoadingLine spin /> : <SparkToolLine />,
       title: title,
       description: subTitle,
+      simple: simple,
     }}
 
     body={{
       defaultOpen: defaultOpen,
       children: <OperateCard.LineBody>
-        <Block title="Input" content={props.input} />
-        <Block title="Output" content={props.output} />
+        <Block title="Input" content={props.input} expandEnabled={!simple} language={props.inputBlock?.language} />
+        <Block title="Output" content={props.output} expandEnabled={!simple} language={props.outputBlock?.language} />
       </OperateCard.LineBody>
     }}
   >

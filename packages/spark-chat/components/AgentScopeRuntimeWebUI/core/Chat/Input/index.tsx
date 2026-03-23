@@ -33,6 +33,7 @@ export default function Input(props: InputProps) {
   const {
     getFileList,
     setFileList,
+    handlePasteFile,
     uploadIconButton,
     uploadFileListHeader
   } = useAttachments(attachments, { disabled: !!inputContext.disabled });
@@ -71,6 +72,7 @@ export default function Input(props: InputProps) {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         allowSpeech={allowSpeech}
+        onPasteFile={handlePasteFile}
       />
       {afterUI}
     </div>

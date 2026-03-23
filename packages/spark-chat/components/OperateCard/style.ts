@@ -3,6 +3,17 @@ import { createGlobalStyle } from 'antd-style';
 export default createGlobalStyle`
 .${(p) => p.theme.prefixCls}-operate-card {
   width: 100%;
+
+  &-simple-collapsed {
+    width: auto;
+    display: inline-flex;
+    background-color: transparent;
+
+    .${(p) => p.theme.prefixCls}-operate-card-header {
+      padding: 0;
+      height: auto;
+    }
+  }
   border-radius: ${(p) => p.theme.borderRadiusLG}px;
   overflow: hidden;
   background-color: ${(p) => p.theme.colorFillTertiary};
@@ -161,18 +172,37 @@ export default createGlobalStyle`
   &-tool-call-block {
     margin-left: 16px;
     margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid ${(p) => p.theme.colorBorderSecondary};
+    overflow: hidden;
+    background-color: ${(p) => p.theme.colorBgBase};
 
-  
-    &-title {
-      font-size: 12px;
-      color: ${(p) => p.theme.colorText};
-      line-height: 20px;
-      margin-bottom: 4px;
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: ${(p) => p.theme.colorFillSecondary};
+      height: 32px;
+      padding: 0 12px;
+      cursor: pointer;
+      user-select: none;
     }
 
+    &-title {
+      font-size: 14px;
+      color: ${(p) => p.theme.colorText};
+    }
+
+    &-extra {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    &-content {
+      max-height: 128px;
+      overflow-y: auto;
+    }
   }
-
-
 
   &-device-action {
     height: auto;

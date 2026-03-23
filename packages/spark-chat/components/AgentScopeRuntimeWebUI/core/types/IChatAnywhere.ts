@@ -37,6 +37,11 @@ export interface IAgentScopeRuntimeWebUIAPIOptions {
     session_id: string;
   }) => void;
 
+  reconnect?: (data: {
+    session_id: string;
+    signal?: AbortSignal;
+  }) => Promise<Response>;
+
   enableHistoryMessages?: boolean;
   
   responseParser?: (

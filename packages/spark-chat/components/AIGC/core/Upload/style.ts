@@ -44,6 +44,13 @@ export default createGlobalStyle`
       font-size: 20px;
       color: ${(p) => p.theme.colorText};
     }
+
+    &-count {
+      color: ${(p) => p.theme.colorText};
+      text-align: center;
+      font-size: 12px;
+      line-height: 20px;
+    }
   }
 }
 `;
