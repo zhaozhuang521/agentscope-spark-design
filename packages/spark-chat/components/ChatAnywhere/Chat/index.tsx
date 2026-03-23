@@ -34,6 +34,7 @@ export default forwardRef(function (_, ref) {
     <Style />
     <div className={chatClassName}>
       <Bubble.List
+        pagination={uiConfig?.bubbleList?.pagination}
         smooth={!!inputContext.loading}
         style={{ height: 0, flex: emptyMessage ? 0 : 1 }}
         // @ts-ignore
