@@ -107,6 +107,17 @@ export interface IChatAnywhereConfigUIConfig {
    * @descriptionEn Disclaimer component or text
    */
   disclaimer?: React.ReactElement | string;
+  /**
+   * @description 气泡列表的配置
+   * @descriptionEn Bubble list configuration
+   */
+  bubbleList?: {
+    /**
+     * @description 是否启用分页
+     * @descriptionEn Whether to enable pagination
+     */
+    pagination?: boolean;
+  };
 }
 
 export interface IChatAnywhereConfigOnInput {
