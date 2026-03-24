@@ -84,6 +84,12 @@ export interface SenderProps extends Pick<TextareaProps, 'placeholder' | 'onKeyP
   sendDisabled?: boolean;
 
   /**
+   * @description 是否允许在输入框为空时触发发送
+   * @descriptionEn Whether to allow sending when input is empty
+   */
+  allowEmptySubmit?: boolean;
+
+  /**
    * @description 是否启用用户focus时展开输入框组件
    * @descriptionEn Whether to enable the user focus to expand the input box component
    */
@@ -227,6 +233,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     readOnly,
     enableFocusExpand = false,
     sendDisabled = false,
+    allowEmptySubmit = false,
     submitType = 'enter',
     onSubmit,
     loading,
@@ -458,7 +465,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
   const contextValue = {
     prefixCls: actionBtnCls,
     onSend: triggerSend,
-    onSendDisabled: !innerValue || !innerValue.trim() || sendDisabled,
+    onSendDisabled: ((!innerValue || !innerValue.trim()) && !allowEmptySubmit) || sendDisabled,
     onClear: triggerClear,
     onClearDisabled: !innerValue,
     onCancel,
