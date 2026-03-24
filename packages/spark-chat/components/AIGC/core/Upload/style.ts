@@ -39,6 +39,10 @@ export default createGlobalStyle`
       );
     }
 
+    &-content {
+      line-height: 1;
+    }
+
     /* 加号图标 */
     &-icon {
       font-size: 20px;

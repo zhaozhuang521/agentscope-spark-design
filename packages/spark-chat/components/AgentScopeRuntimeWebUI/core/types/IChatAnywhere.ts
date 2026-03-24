@@ -312,7 +312,7 @@ export interface IAgentScopeRuntimeWebUISessionOptions {
    * @description 会话 API 接口
    * @descriptionEn Session API interface
    */
-  api: IAgentScopeRuntimeWebUISessionAPI;
+  api?: IAgentScopeRuntimeWebUISessionAPI;
 }
 
 /**
