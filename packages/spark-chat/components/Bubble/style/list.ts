@@ -4,6 +4,14 @@ export default createGlobalStyle`
 .${(p) => p.theme.prefixCls}-bubble-list-wrapper {
   position: relative;
   overflow: hidden;
+  height: 100%;
+}
+
+.${(p) => p.theme.prefixCls}-bubble-list-scroll {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  scrollbar-gutter: stable both-edges;
 }
 
 .${(p) => p.theme.prefixCls}-bubble-list {
@@ -16,6 +24,26 @@ export default createGlobalStyle`
     display: block;
     content: ' ';
     height: 16px;
+  }
+
+  &-order-desc {
+    flex-direction: column-reverse;
+
+    &::before {
+      display: block;
+      content: ' ';
+      height: 16px;
+      flex: 0 0 16px;
+    }
+
+    &::after {
+      height: 0;
+      flex: 0 0 0;
+    }
+  }
+
+  &-order-desc-short {
+    justify-content: flex-end;
   }
 }
 

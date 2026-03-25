@@ -24,7 +24,7 @@ export function useMessages() {
         };
         return [...prev.slice(0, index), nextMessage, ...prev.slice(index + 1)];
       } else {
-        return [...prev, message];
+        return [message, ...prev];
       }
     });
 

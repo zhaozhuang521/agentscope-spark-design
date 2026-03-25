@@ -10,11 +10,21 @@ import Style from './style';
 
 export default forwardRef(function (_, ref) {
   const messages = useChatAnywhere(v => v.messages);
+  const safeMessages = messages || [];
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('chat-anywhere');
   const uiConfig = useChatAnywhere(v => v.uiConfig);
   const [ready, setReady] = useState(false);
   const inputContext = useInput();
+  const prevMessagesLengthRef = React.useRef(safeMessages.length);
+
+  React.useEffect(() => {
+    if (safeMessages.length > prevMessagesLengthRef.current) {
+      // New messages in desc mode should always bring viewport to latest bottom.
+      (ref as any)?.chatRef?.current?.scrollToBottom?.();
+    }
+    prevMessagesLengthRef.current = safeMessages.length;
+  }, [safeMessages.length, ref]);
 
   useTimeout(() => {
     setReady(true);
@@ -28,18 +38,19 @@ export default forwardRef(function (_, ref) {
     }
   );
 
-  const emptyMessage = !messages?.length;
+  const emptyMessage = safeMessages.length === 0;
 
   return <>
     <Style />
     <div className={chatClassName}>
       <Bubble.List
         pagination={uiConfig?.bubbleList?.pagination}
+        order="desc"
         smooth={!!inputContext.loading}
         style={{ height: 0, flex: emptyMessage ? 0 : 1 }}
         // @ts-ignore
         ref={ref.chatRef}
-        items={messages}
+        items={safeMessages}
       />
       {
         emptyMessage ? <div className={`${chatClassName}-welcome`}>{uiConfig?.welcome}</div> : null

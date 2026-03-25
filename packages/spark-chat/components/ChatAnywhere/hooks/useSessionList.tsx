@@ -66,7 +66,7 @@ export function useSessionList() {
     setSessionList((sessionList) => {
       return sessionList.map((session) => {
         if (session.key === currentSessionKey) {
-          session.messages[currentRegenerateIndex] = messages;
+          session.messages[currentRegenerateIndex] = [...messages].reverse();
           return { ...session };
         }
         return session;
@@ -76,7 +76,8 @@ export function useSessionList() {
 
 
   const getMessagesBySession = React.useCallback((currentSessionKey, currentRegenerateIndex) => {
-    return getSessionList().find((session) => session.key === currentSessionKey)?.messages[currentRegenerateIndex];
+    const messages = getSessionList().find((session) => session.key === currentSessionKey)?.messages[currentRegenerateIndex];
+    return messages ? [...messages].reverse() : messages;
   }, []);
 
   const getSession = React.useCallback(() => {

@@ -105,6 +105,17 @@ export interface IAgentScopeRuntimeWebUIThemeOptions {
    */
   background?: string;
   /**
+   * @description 气泡列表配置
+   * @descriptionEn Bubble list configuration
+   */
+  bubbleList?: {
+    /**
+     * @description 是否启用分页
+     * @descriptionEn Whether to enable pagination
+     */
+    pagination?: boolean;
+  };
+  /**
    * @description 语言
    * @descriptionEn Language
    * @default 'en'

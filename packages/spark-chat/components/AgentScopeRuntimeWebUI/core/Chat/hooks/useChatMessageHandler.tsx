@@ -84,7 +84,9 @@ export default function useChatMessageHandler(options: UseChatMessageHandlerOpti
    * 获取历史消息（用于 API 请求）
    */
   const getHistoryMessages = useCallback(() => {
-    return AgentScopeRuntimeRequestBuilder.getHistoryMessages(getMessages());
+    const messages = getMessages();
+    const normalizedMessages = [...messages].reverse();
+    return AgentScopeRuntimeRequestBuilder.getHistoryMessages(normalizedMessages);
   }, [getMessages]);
 
   /**

@@ -5,6 +5,8 @@ import { ChatAnywhereSessionsContext } from "../../Context/ChatAnywhereSessionsC
 import cls from 'classnames';
 import Welcome from "../Welcome";
 import { ChatAnywhereInputContext } from "../../Context/ChatAnywhereInputContext";
+import { useChatAnywhereOptions } from "../../Context/ChatAnywhereOptionsContext";
+import React from "react";
 
 
 export default function MessageList(props: { onSubmit: (data: { query: string; fileList?: any[] }) => void }) {
@@ -12,14 +14,26 @@ export default function MessageList(props: { onSubmit: (data: { query: string; f
   const messages = useContextSelector(ChatAnywhereMessagesContext, v => v.messages);
   const prefixCls = useProviderContext().getPrefixCls('chat-anywhere-message-list');
   const currentSessionId = useContextSelector(ChatAnywhereSessionsContext, v => v.currentSessionId);
+  const bubbleListOptions = useChatAnywhereOptions(v => v.theme?.bubbleList);
+  const listRef = React.useRef<{ scrollToBottom: () => void } | null>(null);
+  const prevMessagesLengthRef = React.useRef(messages.length);
+
+  React.useEffect(() => {
+    if (messages.length > prevMessagesLengthRef.current) {
+      listRef.current?.scrollToBottom();
+    }
+    prevMessagesLengthRef.current = messages.length;
+  }, [messages.length]);
 
   if (messages.length === 0) return <div className={cls(prefixCls, `${prefixCls}-welcome`)}>
     <Welcome onSubmit={props.onSubmit} />
   </div>;
 
   return <Bubble.List
+    ref={listRef}
     smooth={!!loading}
-    pagination={true}
+    pagination={bubbleListOptions?.pagination ?? true}
+    order="desc"
     key={currentSessionId}
     classNames={{
       wrapper: prefixCls,

@@ -59,7 +59,8 @@ export const useChatAnywhereSessionLoader = () => {
     })
 
     const session = await options.api.getSession(currentSessionId);
-    const messages = session?.messages || [];
+    const rawMessages = session?.messages || [];
+    const messages = [...rawMessages].reverse();
     setMessages(messages.map(item => {
       return {
         ...item,
