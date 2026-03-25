@@ -379,7 +379,6 @@ export default forwardRef(function (_, ref) {
         disabled={fileLoading || inputContext.disabled}
         sendDisabled={sendDisabled}
         allowEmptySubmit={hasSubmittableFiles}
-        scalable={onInput?.zoomable}
         header={senderHeader}
         prefix={<>
           {uploadPrefixNodes}

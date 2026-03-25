@@ -194,11 +194,6 @@ export interface IAgentScopeRuntimeWebUISenderOptions {
    */
   maxLength?: number;
   /**
-   * @description 是否可缩放
-   * @descriptionEn Whether scalable
-   */
-  scalable?: boolean;
-  /**
    * @description 输入框前置UI
    * @descriptionEn UI before input
    */

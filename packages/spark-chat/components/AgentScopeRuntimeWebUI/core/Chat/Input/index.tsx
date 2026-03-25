@@ -24,7 +24,6 @@ export default function Input(props: InputProps) {
     beforeSubmit = () => Promise.resolve(true),
     beforeUI,
     afterUI,
-    scalable = true,
     attachments,
     prefix,
     allowSpeech,
@@ -59,7 +58,6 @@ export default function Input(props: InputProps) {
       <ChatInput
         loading={inputContext.loading}
         disabled={inputContext.disabled}
-        scalable={scalable}
         placeholder={placeholder}
         value={content}
         prefix={<>
