@@ -134,6 +134,20 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
     return scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop <= 2;
   }, [isDesc]);
 
+  const checkShowScrollToBottom = useCallback(() => {
+    const scrollEl = scrollRef.current;
+    if (!scrollEl) return false;
+
+    const hasOverflow = scrollEl.scrollHeight - scrollEl.clientHeight > 2;
+    if (!hasOverflow) return false;
+
+    if (isDesc) {
+      return scrollEl.scrollTop <= -10;
+    }
+
+    return scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop > 10;
+  }, [isDesc]);
+
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'auto') => {
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
@@ -154,8 +168,8 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
     }
     const isAtBottom = checkIsAtBottom();
     isAtBottomRef.current = isAtBottom;
-    setShowScrollToBottom(!isAtBottom);
-  }, [checkIsAtBottom]);
+    setShowScrollToBottom(checkShowScrollToBottom());
+  }, [checkIsAtBottom, checkShowScrollToBottom]);
 
   React.useImperativeHandle(ref, () => ({
     scrollToBottom: () => {
@@ -205,9 +219,9 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
     requestAnimationFrame(() => {
       const isAtBottom = checkIsAtBottom();
       isAtBottomRef.current = isAtBottom;
-      setShowScrollToBottom(!isAtBottom);
+      setShowScrollToBottom(checkShowScrollToBottom());
     });
-  }, [checkIsAtBottom, order]);
+  }, [checkIsAtBottom, checkShowScrollToBottom, order]);
 
   return <>
     <Style />
