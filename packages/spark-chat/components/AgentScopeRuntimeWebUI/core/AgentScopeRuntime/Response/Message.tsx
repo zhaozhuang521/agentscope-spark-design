@@ -2,6 +2,9 @@ import React from "react";
 import { Markdown } from '@agentscope-ai/chat';
 import { AgentScopeRuntimeContentType, AgentScopeRuntimeRunStatus, IAgentScopeRuntimeMessage } from "../types";
 import Images from '../../../../DefaultCards/Images';
+import Videos from '../../../../DefaultCards/Videos';
+import Files from '../../../../DefaultCards/Files';
+import Audios from '../../../../DefaultCards/Audios';
 
 const Message = React.memo(function ({ data }: { data: IAgentScopeRuntimeMessage }) {
   if (!data.content?.length) return null;
@@ -16,6 +19,16 @@ const Message = React.memo(function ({ data }: { data: IAgentScopeRuntimeMessage
             return <Markdown raw key={index} content={item.refusal}></Markdown>
           case AgentScopeRuntimeContentType.IMAGE:
             return <Images key={index} data={[{ url: item.image_url }]}></Images>
+          case AgentScopeRuntimeContentType.VIDEO:
+            return <Videos key={index} data={[{ src: item.video_url, poster: item.video_poster }]}></Videos>
+          case AgentScopeRuntimeContentType.FILE:
+            return <Files key={index} data={[{
+              url: item.file_url,
+              name: item.file_name || item.fileName || item.file_id,
+              size: item.file_size,
+            }]}></Files>
+          case AgentScopeRuntimeContentType.AUDIO:
+            return <Audios key={index} data={[{ src: item.audio_url || item.data }]}></Audios>
           default:
             return <div key={index}>{JSON.stringify(item)}</div>
         }
