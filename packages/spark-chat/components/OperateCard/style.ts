@@ -310,6 +310,14 @@ export default createGlobalStyle`
       align-items: center;
       cursor: pointer;
       background-color: ${(p) => p.theme.colorFillTertiary};
+
+      &-text {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     &-content {

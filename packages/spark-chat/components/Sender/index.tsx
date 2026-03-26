@@ -17,8 +17,6 @@ import Style from './style';
 import useSpeech, { type AllowSpeech } from './useSpeech';
 import ModeSelect from './ModeSelect';
 import type { InputRef as AntdInputRef, ButtonProps, GetProps } from 'antd';
-import { SparkEnlargeLine, SparkShrinkLine } from '@agentscope-ai/icons';
-import { IconButton } from '@agentscope-ai/design';
 import BeforeUIContainer from './BeforeUIContainer';
 
 
@@ -82,6 +80,12 @@ export interface SenderProps extends Pick<TextareaProps, 'placeholder' | 'onKeyP
    * @descriptionEn Whether to disable the send button
    */
   sendDisabled?: boolean;
+
+  /**
+   * @description 是否允许在输入框为空时触发发送
+   * @descriptionEn Whether to allow sending when input is empty
+   */
+  allowEmptySubmit?: boolean;
 
   /**
    * @description 是否启用用户focus时展开输入框组件
@@ -174,17 +178,6 @@ export interface SenderProps extends Pick<TextareaProps, 'placeholder' | 'onKeyP
    */
   maxLength?: number;
   /**
-   * @description 是否可缩放
-   * @descriptionEn scalable
-   */
-  scalable?: boolean;
-
-  /**
-   * @description 初始行数，默认 2，移动端使用建议设置 1 行
-   * @descriptionEn Initial rows, default 2, recommend 1 for mobile
-   */
-  initialRows?: number;
-  /**
    * @description 是否支持语音输入
    * @descriptionEn Allow speech input
    */
@@ -227,6 +220,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     readOnly,
     enableFocusExpand = false,
     sendDisabled = false,
+    allowEmptySubmit = false,
     submitType = 'enter',
     onSubmit,
     loading,
@@ -248,19 +242,11 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     onPasteFile,
     // @ts-ignore
     components,
-    initialRows = 2,
-    scalable,
     ...rest
-  } = props as (SenderProps & { zoomable?: boolean });
+  } = props;
 
-
-  const zoomable = scalable;
-
-  const [zoom, setZoom] = useState(zoomable ? false : undefined);
   const [focus, setFocus] = useState(false);
-  const autoSize = React.useMemo(() => {
-    return zoom ? { maxRows: 5, minRows: 5 } : { maxRows: 5, minRows: initialRows };
-  }, [zoomable, zoom]);
+  const autoSize = React.useMemo(() => ({ maxRows: 5, minRows: 2 }), []);
 
   const { direction, getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('sender');
@@ -423,19 +409,8 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
 
   const prefix = React.useMemo(() => {
     const nodes = Array.isArray(props.prefix) ? [...props.prefix] : [props.prefix];
-
-    if (zoomable) {
-      nodes.push(
-        <IconButton
-          key="zoom"
-          onClick={() => setZoom(!zoom)}
-          bordered={false}
-          icon={zoom ? <SparkShrinkLine /> : <SparkEnlargeLine />}
-        />
-      )
-    }
-    return nodes;
-  }, [props.prefix, zoomable, zoom, allowSpeech])
+    return nodes.filter((node): node is React.ReactNode => node !== undefined && node !== null);
+  }, [props.prefix])
 
   let actionNode: React.ReactNode = (
     <Flex className={`${actionListCls}-presets`}>
@@ -458,7 +433,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
   const contextValue = {
     prefixCls: actionBtnCls,
     onSend: triggerSend,
-    onSendDisabled: !innerValue || !innerValue.trim() || sendDisabled,
+    onSendDisabled: ((!innerValue || !innerValue.trim()) && !allowEmptySubmit) || sendDisabled,
     onClear: triggerClear,
     onClearDisabled: !innerValue,
     onCancel,

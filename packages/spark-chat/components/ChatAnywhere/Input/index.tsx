@@ -172,6 +172,7 @@ export default forwardRef(function (_, ref) {
 
   const submitFileList = attachedFiles.map(files => files.filter(file => file.status === 'done'));
   const fileLoading = attachedFiles.some(files => files.some(file => file.status === 'uploading'));
+  const hasSubmittableFiles = submitFileList.some(files => files.length > 0);
 
   const handlePasteFile = (file: File) => {
     if (!onUpload?.length) return;
@@ -377,7 +378,7 @@ export default forwardRef(function (_, ref) {
         maxLength={onInput.maxLength}
         disabled={fileLoading || inputContext.disabled}
         sendDisabled={sendDisabled}
-        scalable={onInput?.zoomable}
+        allowEmptySubmit={hasSubmittableFiles}
         header={senderHeader}
         prefix={<>
           {uploadPrefixNodes}
