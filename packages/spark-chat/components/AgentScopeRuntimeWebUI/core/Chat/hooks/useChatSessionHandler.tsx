@@ -34,10 +34,9 @@ export default function useChatSessionHandler() {
    * 同步会话消息
    */
   const syncSessionMessages = useCallback(async (messages: IAgentScopeRuntimeWebUIMessage[]) => {
-    const normalizedMessages = [...messages].reverse();
     await updateSession({
       id: getCurrentSessionId(),
-      messages: normalizedMessages,
+      messages: messages,
     });
   }, [getCurrentSessionId, updateSession]);
 

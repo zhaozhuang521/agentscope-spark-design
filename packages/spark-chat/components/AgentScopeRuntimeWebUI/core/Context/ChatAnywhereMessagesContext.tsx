@@ -63,7 +63,7 @@ export const useChatAnywhereMessages = () => {
         };
         return [...prev.slice(0, index), nextMessage, ...prev.slice(index + 1)];
       } else {
-        return [message, ...prev];
+        return [...prev, message];
       }
     });
   }, []);
