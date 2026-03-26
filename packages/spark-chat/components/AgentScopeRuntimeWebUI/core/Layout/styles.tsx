@@ -58,8 +58,8 @@ export default createGlobalStyle`
     }
 
     &::after {
-      height: 54px;
-      flex: 0 0 54px;
+      height: 27px;
+      flex: 0 0 27px;
     }
   }
 }
