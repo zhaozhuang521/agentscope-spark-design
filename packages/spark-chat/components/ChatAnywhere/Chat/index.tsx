@@ -10,7 +10,7 @@ import Style from './style';
 
 export default forwardRef(function (_, ref) {
   const messages = useChatAnywhere(v => v.messages);
-  const safeMessages = messages || [];
+  const safeMessages = [...(messages || [])].reverse();
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('chat-anywhere');
   const uiConfig = useChatAnywhere(v => v.uiConfig);
