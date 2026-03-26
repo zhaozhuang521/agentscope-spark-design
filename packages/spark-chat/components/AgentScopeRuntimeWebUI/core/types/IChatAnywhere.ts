@@ -33,20 +33,42 @@ export interface IAgentScopeRuntimeWebUIAPIOptions {
     signal?: AbortSignal;
   }) => Promise<Response>;
 
+  /**
+   * @description 取消当前会话生成
+   * @descriptionEn Cancel current session generation
+   */
   cancel?: (data: {
     session_id: string;
   }) => void;
 
+  /**
+   * @description 重连会话流式响应
+   * @descriptionEn Reconnect session stream response
+   */
   reconnect?: (data: {
     session_id: string;
     signal?: AbortSignal;
   }) => Promise<Response>;
 
+  /**
+   * @description 是否在请求中携带历史消息
+   * @descriptionEn Whether to include history messages in request
+   */
   enableHistoryMessages?: boolean;
-  
+
+  /**
+   * @description 自定义流式数据解析函数（默认 JSON.parse）
+   * @descriptionEn Custom parser for stream chunks (default JSON.parse)
+   */
   responseParser?: (
     response: Response,
   ) => IAgentScopeRuntimeResponse | IAgentScopeRuntimeMessage | IContent;
+
+  /**
+   * @description 自定义媒体资源地址转换（如加签、CDN 替换）
+   * @descriptionEn Custom media URL transformer (e.g. sign URL, replace CDN domain)
+   */
+  replaceMediaURL?: (url: string) => string;
 }
 
 /**
