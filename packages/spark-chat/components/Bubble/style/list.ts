@@ -43,12 +43,14 @@ export default createGlobalStyle`
   }
 
   &-order-desc-short {
-    justify-content: flex-end;
+    height: 0;
+    flex: 1;
   }
 }
 
 .${(p) => p.theme.prefixCls}-bubble-list-load-more {
   display: flex;
+  padding: 16px 0;
   justify-content: center;
   align-items: center;
 }

@@ -235,14 +235,14 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
           `${prefixCls}-scroll`,
           `${prefixCls}`,
           `${prefixCls}-order-${order}`,
-          {
-            [`${prefixCls}-order-desc-short`]: isDesc && shortContent,
-          },
           props.classNames?.list,
         )}
         ref={scrollRef}
         onScroll={handleScroll}
       >
+        {
+          order === 'desc' && <div className={`${prefixCls}-order-desc-short`}></div>
+        }
         <BubbleListContent
           order={order}
           paginationItems={paginationItems}
