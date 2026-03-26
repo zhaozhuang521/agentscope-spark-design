@@ -4,13 +4,11 @@ import { useContextSelector } from "use-context-selector";
 import { ChatAnywhereSessionsContext } from "../../Context/ChatAnywhereSessionsContext";
 import cls from 'classnames';
 import Welcome from "../Welcome";
-import { ChatAnywhereInputContext } from "../../Context/ChatAnywhereInputContext";
 import { useChatAnywhereOptions } from "../../Context/ChatAnywhereOptionsContext";
 import React from "react";
 
 
 export default function MessageList(props: { onSubmit: (data: { query: string; fileList?: any[] }) => void }) {
-  const loading = useContextSelector(ChatAnywhereInputContext, v => v.loading);
   const messages = useContextSelector(ChatAnywhereMessagesContext, v => v.messages);
   const prefixCls = useProviderContext().getPrefixCls('chat-anywhere-message-list');
   const currentSessionId = useContextSelector(ChatAnywhereSessionsContext, v => v.currentSessionId);
@@ -31,7 +29,6 @@ export default function MessageList(props: { onSubmit: (data: { query: string; f
 
   return <Bubble.List
     ref={listRef}
-    smooth={!!loading}
     pagination={bubbleListOptions?.pagination ?? true}
     order="desc"
     key={currentSessionId}

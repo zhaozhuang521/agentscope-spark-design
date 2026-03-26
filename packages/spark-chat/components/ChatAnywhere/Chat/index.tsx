@@ -1,7 +1,7 @@
 import React, { forwardRef, useState } from 'react';
 import Bubble from '../../Bubble';
 import Input from '../Input';
-import { useInput, useProviderContext } from '@agentscope-ai/chat';
+import { useProviderContext } from '@agentscope-ai/chat';
 import cls from 'classnames';
 import { useTimeout } from 'ahooks';
 import { Disclaimer } from '@agentscope-ai/chat';
@@ -15,7 +15,6 @@ export default forwardRef(function (_, ref) {
   const prefixCls = getPrefixCls('chat-anywhere');
   const uiConfig = useChatAnywhere(v => v.uiConfig);
   const [ready, setReady] = useState(false);
-  const inputContext = useInput();
   const prevMessagesLengthRef = React.useRef(safeMessages.length);
 
   React.useEffect(() => {
@@ -46,7 +45,6 @@ export default forwardRef(function (_, ref) {
       <Bubble.List
         pagination={uiConfig?.bubbleList?.pagination}
         order="desc"
-        smooth={!!inputContext.loading}
         style={{ height: 0, flex: emptyMessage ? 0 : 1 }}
         // @ts-ignore
         ref={ref.chatRef}

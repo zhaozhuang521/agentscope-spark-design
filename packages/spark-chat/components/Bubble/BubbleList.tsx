@@ -36,11 +36,6 @@ export interface BubbleListProps extends React.HTMLAttributes<HTMLDivElement> {
    */
   children?: React.ReactNode | React.ReactNode[];
   /**
-   * @description 是否启用平滑滚动效果，影响滚动动画的流畅度
-   * @descriptionEn Whether to enable smooth scrolling effect, affects scrolling animation smoothness
-   */
-  smooth?: boolean;
-  /**
    * @description 语义化CSS类名，用于为不同区域添加自定义类名
    * @descriptionEn Semantic CSS class names for adding custom classes to different areas
    */
@@ -111,13 +106,10 @@ function LoadMore({ handleLoadMore }: { handleLoadMore: () => Promise<void> }) {
 const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps> = (props, ref) => {
   const {
     items = [],
-    smooth = true,
     order = 'asc',
   } = props;
 
-  const [initial, setInitial] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-  const [shortContent, setShortContent] = useState(false);
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
   const isAtBottomRef = React.useRef(true);
   const { getPrefixCls } = useProviderContext();
@@ -164,7 +156,6 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
   const handleScroll = useCallback(() => {
     const scrollEl = scrollRef.current;
     if (scrollEl) {
-      setShortContent(scrollEl.scrollHeight <= scrollEl.clientHeight + 1);
     }
     const isAtBottom = checkIsAtBottom();
     isAtBottomRef.current = isAtBottom;
@@ -177,9 +168,6 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
     }
   }), [scrollToBottom]);
 
-  useMount(() => {
-    setInitial(true);
-  });
 
   const { items: paginationItems, noMore, loadMore } = usePaginationItems(items, {
     enable: props.pagination,
@@ -187,32 +175,13 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
   });
 
   useEffect(() => {
-    if (!initial || !isAtBottomRef.current) return;
-    scrollToBottom(smooth ? 'smooth' : 'auto');
-  }, [items.length, initial, smooth, scrollToBottom]);
+    scrollToBottom('auto');
+  }, [items.length, scrollToBottom]);
+
 
   useEffect(() => {
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
-
-    const mutationObserver = new MutationObserver(() => {
-      if (!isAtBottomRef.current) return;
-      scrollToBottom(smooth ? 'smooth' : 'auto');
-    });
-
-    mutationObserver.observe(scrollEl, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-
-    return () => mutationObserver.disconnect();
-  }, [scrollToBottom, smooth]);
-
-  useEffect(() => {
-    const scrollEl = scrollRef.current;
-    if (!scrollEl) return;
-    setShortContent(scrollEl.scrollHeight <= scrollEl.clientHeight + 1);
   }, [items.length, order]);
 
   useEffect(() => {
