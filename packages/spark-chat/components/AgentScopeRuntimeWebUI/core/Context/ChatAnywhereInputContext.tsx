@@ -48,8 +48,6 @@ export function ChatAnywhereInputContextProvider(props: {
   }, [getCurrentSessionId, _setDisabled]);
 
   useEffect(() => {
-    // 切离旧会话时重置其 loading/disabled（SSE 连接会被 abort）
-    // 切回时若后端仍在生成，session loader 会触发 reconnect 并重新 setLoading(true)
     if (prevSessionIdRef.current && prevSessionIdRef.current !== currentSessionId) {
       if (stateMapRef.current[prevSessionIdRef.current]) {
         stateMapRef.current[prevSessionIdRef.current].loading = false;
