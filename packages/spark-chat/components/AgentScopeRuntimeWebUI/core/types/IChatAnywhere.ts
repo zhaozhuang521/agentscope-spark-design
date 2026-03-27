@@ -37,9 +37,7 @@ export interface IAgentScopeRuntimeWebUIAPIOptions {
    * @description 取消当前会话生成
    * @descriptionEn Cancel current session generation
    */
-  cancel?: (data: {
-    session_id: string;
-  }) => void;
+  cancel?: (data: { session_id: string }) => void;
 
   /**
    * @description 重连会话流式响应
@@ -191,6 +189,11 @@ export interface IAgentScopeRuntimeWebUIWelcomeOptions {
    * @descriptionEn Avatar
    */
   avatar?: string | React.ReactElement;
+  /**
+   * @description 昵称
+   * @descriptionEn Nickname
+   */
+  nick?: string | React.ReactElement;
   /**
    * @description 提示语列表
    * @descriptionEn Prompt list

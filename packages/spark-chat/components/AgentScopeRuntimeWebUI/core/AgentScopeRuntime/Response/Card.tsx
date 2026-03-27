@@ -7,15 +7,15 @@ import Reasoning from "./Reasoning";
 import Error from "./Error";
 import { Bubble } from "@agentscope-ai/chat";
 import Actions from "./Actions";
-import { Avatar } from 'antd';
+import { Avatar, Flex } from 'antd';
 import { useChatAnywhereOptions } from "../../Context/ChatAnywhereOptionsContext";
 
 export default function AgentScopeRuntimeResponseCard(props: {
   data: IAgentScopeRuntimeResponse;
   isLast?: boolean;
 }) {
-  const avatar = useChatAnywhereOptions(v => v.welcome.avatar) ?? true;
-
+  const avatar = useChatAnywhereOptions(v => v.welcome.avatar);
+  const nick = useChatAnywhereOptions(v => v.welcome.nick);
   const messages = useMemo(() => {
     return AgentScopeRuntimeResponseBuilder.mergeToolMessages(props.data.output);
   }, [props.data.output])
@@ -24,7 +24,10 @@ export default function AgentScopeRuntimeResponseCard(props: {
   if (!messages?.length && AgentScopeRuntimeResponseBuilder.maybeGenerating(props.data)) return <Bubble.Spin />;
 
   return <>
-    {avatar && <Avatar src={avatar} />}
+    {avatar && <Flex align="center" gap={8}>
+      <Avatar src={avatar} />
+      {nick && <span>{nick as string}</span>}
+    </Flex>}
     {
 
       messages.map(item => {

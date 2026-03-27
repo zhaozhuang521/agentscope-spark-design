@@ -529,7 +529,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
               null;
             const itemValueByPath = menuItem?.getAttribute('data-path-key');
             const itemLabel = menuItem?.getAttribute('title')?.trim();
-            const itemValueByLabel = itemLabel ? findSuggestionValueByLabel(suggestions, itemLabel) : undefined;
+            const itemValueByLabel = itemLabel ? findSuggestionValueByLabel(suggestions as SuggestionItems, itemLabel) : undefined;
             const selectedValue = itemValueByLabel || itemValueByPath;
 
             if (selectedValue) {
