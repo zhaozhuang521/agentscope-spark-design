@@ -50,7 +50,7 @@ export interface SenderProps extends Pick<TextareaProps, 'placeholder' | 'onKeyP
    *   { label: 'Check some knowledge', value: 'knowledge' },
    * ]
    */
-  suggestions?: { label?: string; value: string }[];
+  suggestions?: { label?: string | React.ReactNode; value: string }[];
 
 
   /**
