@@ -172,11 +172,6 @@ export interface IChatAnywhereConfigOnInput {
    */
   beforeSubmit?: () => Promise<Boolean>;
   /**
-   * @description 是否支持缩放功能
-   * @descriptionEn Whether to support zoom functionality
-   */
-  zoomable?: boolean;
-  /**
    * @description 输入框的占位符文本
    * @descriptionEn Placeholder text for the input field
    */
@@ -187,6 +182,16 @@ export interface IChatAnywhereConfigOnInput {
    * @descriptionEn Whether the input field is disabled
    */
   disabled?: boolean;
+
+  /**
+   * @description 建议列表
+   * @descriptionEn Suggestions list
+   * @example [
+   *   { label: 'Draw a picture', value: 'draw' },
+   *   { label: 'Check some knowledge', value: 'knowledge' },
+   * ]
+   */
+  suggestions?: { label?: string; value: string }[];
 }
 
 export interface IChatAnywhereConfigOnUpload {

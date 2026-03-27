@@ -271,6 +271,15 @@ export interface IAgentScopeRuntimeWebUISenderOptions {
    * @descriptionEn Whether to allow speech input
    */
   allowSpeech?: boolean;
+  /**
+   * @description 建议列表
+   * @descriptionEn Suggestions list
+   * @example [
+   *   { label: 'Draw a picture', value: 'draw' },
+   *   { label: 'Check some knowledge', value: 'knowledge' },
+   * ]
+   */
+  suggestions?: { label?: string; value: string }[];
 }
 
 /**

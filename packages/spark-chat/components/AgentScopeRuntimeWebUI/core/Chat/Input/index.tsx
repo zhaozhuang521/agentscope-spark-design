@@ -27,6 +27,7 @@ export default function Input(props: InputProps) {
     attachments,
     prefix,
     allowSpeech,
+    suggestions,
   } = senderOptions || {};
 
   const {
@@ -71,6 +72,7 @@ export default function Input(props: InputProps) {
         onCancel={handleCancel}
         allowSpeech={allowSpeech}
         onPasteFile={handlePasteFile}
+        suggestions={suggestions}
       />
       {afterUI}
     </div>

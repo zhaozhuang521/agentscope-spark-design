@@ -43,7 +43,7 @@ export default forwardRef(function (_, ref) {
       afterUI: undefined,
       morePrefixActions: undefined,
       maxLength: undefined,
-      zoomable: true,
+      suggestions: undefined,
       beforeSubmit: () => Promise.resolve(true),
       header: [],
       enableFocusExpand: false,
@@ -371,6 +371,7 @@ export default forwardRef(function (_, ref) {
         onInput.beforeUI
       }
       <ChatInput
+        suggestions={onInput.suggestions}
         placeholder={onInput.placeholder}
         enableFocusExpand={onInput.enableFocusExpand}
         value={content}

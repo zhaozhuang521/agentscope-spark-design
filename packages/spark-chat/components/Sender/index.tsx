@@ -1,4 +1,5 @@
 import { Button, Flex, Input } from 'antd';
+import { Suggestion } from '@ant-design/x';
 import classnames from 'classnames';
 import { useMergedState } from 'rc-util';
 import pickAttrs from 'rc-util/lib/pickAttrs';
@@ -16,13 +17,14 @@ import SpeechButton from './components/SpeechButton';
 import Style from './style';
 import useSpeech, { type AllowSpeech } from './useSpeech';
 import ModeSelect from './ModeSelect';
-import type { InputRef as AntdInputRef, ButtonProps, GetProps } from 'antd';
+import type { InputRef as AntdInputRef, ButtonProps, GetProp, GetProps } from 'antd';
 import BeforeUIContainer from './BeforeUIContainer';
 
 
 export type SubmitType = 'enter' | 'shiftEnter' | false;
 
 type TextareaProps = GetProps<typeof Input.TextArea>;
+type SuggestionItems = Exclude<GetProp<typeof Suggestion, 'items'>, () => void>;
 
 export interface SenderComponents {
   input?: React.ComponentType<TextareaProps>;
@@ -40,6 +42,17 @@ export type ActionsRender = (
 ) => React.ReactNode;
 
 export interface SenderProps extends Pick<TextareaProps, 'placeholder' | 'onKeyPress'> {
+  /**
+   * @description 建议列表
+   * @descriptionEn Suggestions list
+   * @example [
+   *   { label: 'Draw a picture', value: 'draw' },
+   *   { label: 'Check some knowledge', value: 'knowledge' },
+   * ]
+   */
+  suggestions?: { label?: string; value: string }[];
+
+
   /**
    * @description 输入框的默认初始值，仅在非受控模式下生效
    * @descriptionEn Default initial value for the input field, only effective in uncontrolled mode
@@ -232,6 +245,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     actions,
     onKeyPress,
     onKeyDown,
+    suggestions,
     disabled,
     header,
     // @ts-ignore
@@ -312,6 +326,30 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
   const [speechPermission, triggerSpeech, speechRecording] = useSpeech((transcript) => {
     triggerValueChange(`${innerValue} ${transcript}`);
   }, allowSpeech);
+  const hasSuggestions = Array.isArray(suggestions) && suggestions.length > 0;
+
+  const findSuggestionValueByLabel = React.useCallback((items: SuggestionItems | undefined, label: string): string | undefined => {
+    if (!items?.length) {
+      return undefined;
+    }
+
+    for (const item of items as any[]) {
+      if (!item || typeof item !== 'object') {
+        continue;
+      }
+
+      if (item.label === label && typeof item.value === 'string') {
+        return item.value;
+      }
+
+      const childValue = findSuggestionValueByLabel(item.children, label);
+      if (childValue) {
+        return childValue;
+      }
+    }
+
+    return undefined;
+  }, []);
 
   const InputTextArea = getComponent(components, ['input'], Input.TextArea);
 
@@ -339,6 +377,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
 
   // ============================ Submit ============================
   const isCompositionRef = React.useRef(false);
+  const suggestionOpenRef = React.useRef(false);
 
   const onInternalCompositionStart = () => {
     isCompositionRef.current = true;
@@ -348,8 +387,8 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     isCompositionRef.current = false;
   };
 
-  const onInternalKeyPress: TextareaProps['onKeyPress'] = (e) => {
-    const canSubmit = e.key === 'Enter' && !isCompositionRef.current;
+  const onInternalPressEnter: TextareaProps['onPressEnter'] = (e) => {
+    const canSubmit = !isCompositionRef.current && !suggestionOpenRef.current;
 
     // Check for `submitType` to submit
     switch (submitType) {
@@ -366,10 +405,6 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
           triggerSend();
         }
         break;
-    }
-
-    if (onKeyPress) {
-      onKeyPress(e);
     }
   };
 
@@ -445,6 +480,77 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
 
   }
 
+  const renderInput = (
+    suggestionProps?: {
+      onTrigger?: (open?: boolean) => void;
+      onKeyDown?: React.KeyboardEventHandler<HTMLTextAreaElement>;
+      open?: boolean;
+    },
+  ) => {
+    suggestionOpenRef.current = !!suggestionProps?.open;
+
+    return (
+      <InputTextArea
+        {...inputProps}
+        disabled={!!disabled}
+        style={styles.input}
+        className={classnames(inputCls, classNames.input)}
+        autoSize={autoSize}
+        value={innerValue.slice(0, props.maxLength || Number.MAX_SAFE_INTEGER)}
+        onChange={(event) => {
+          const nextValue = (event.target as HTMLTextAreaElement).value;
+          triggerValueChange(
+            nextValue,
+            event as React.ChangeEvent<HTMLTextAreaElement>,
+          );
+
+          if (hasSuggestions) {
+            if (nextValue === '/') {
+              suggestionProps?.onTrigger?.();
+            } else if (!nextValue) {
+              suggestionProps?.onTrigger?.(false);
+            }
+          }
+
+          triggerSpeech(true);
+        }}
+        onKeyPress={onKeyPress}
+        onPressEnter={onInternalPressEnter}
+        onCompositionStart={onInternalCompositionStart}
+        onCompositionEnd={onInternalCompositionEnd}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && suggestionProps?.open && hasSuggestions) {
+            const root = containerRef.current?.ownerDocument;
+            const selectedMenuItem = root?.querySelector('[role="menuitemcheckbox"][aria-checked="true"]');
+            const activeMenuItem = root?.querySelector('[role="menuitem"][aria-current="true"]');
+            const menuItem =
+              (selectedMenuItem instanceof HTMLElement && selectedMenuItem) ||
+              (activeMenuItem instanceof HTMLElement && activeMenuItem) ||
+              null;
+            const itemValueByPath = menuItem?.getAttribute('data-path-key');
+            const itemLabel = menuItem?.getAttribute('title')?.trim();
+            const itemValueByLabel = itemLabel ? findSuggestionValueByLabel(suggestions, itemLabel) : undefined;
+            const selectedValue = itemValueByLabel || itemValueByPath;
+
+            if (selectedValue) {
+              event.preventDefault();
+              event.stopPropagation();
+              triggerValueChange(`/${selectedValue} `);
+              suggestionProps.onTrigger?.(false);
+              return;
+            }
+          }
+
+          suggestionProps?.onKeyDown?.(event);
+          onKeyDown?.(event);
+        }}
+        onPaste={onInternalPaste}
+        variant="borderless"
+        readOnly={readOnly}
+      />
+    );
+  };
+
   return <>
     <Style />
 
@@ -454,28 +560,16 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
       )}
 
       <div className={`${prefixCls}-content`}>
-        <InputTextArea
-          {...inputProps}
-          disabled={!!disabled}
-          style={styles.input}
-          className={classnames(inputCls, classNames.input)}
-          autoSize={autoSize}
-          value={innerValue.slice(0, props.maxLength || Number.MAX_SAFE_INTEGER)}
-          onChange={(event) => {
-            triggerValueChange(
-              (event.target as HTMLTextAreaElement).value,
-              event as React.ChangeEvent<HTMLTextAreaElement>,
-            );
-            triggerSpeech(true);
-          }}
-          onPressEnter={onInternalKeyPress}
-          onCompositionStart={onInternalCompositionStart}
-          onCompositionEnd={onInternalCompositionEnd}
-          onKeyDown={onKeyDown}
-          onPaste={onInternalPaste}
-          variant="borderless"
-          readOnly={readOnly}
-        />
+        {hasSuggestions ? (
+          <Suggestion
+            items={suggestions as SuggestionItems}
+            onSelect={(itemValue) => {
+              triggerValueChange(`/${itemValue} `);
+            }}
+          >
+            {(suggestionProps) => renderInput(suggestionProps)}
+          </Suggestion>
+        ) : renderInput()}
 
         <div className={`${prefixCls}-content-bottom`}>
           {prefix.length > 0 && (

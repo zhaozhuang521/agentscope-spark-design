@@ -16,6 +16,16 @@ export default () => {
       maxLength: 10000,
       disclaimer:
         'AI can also make mistakes, so please check carefully and use it with caution',
+      suggestions: [
+        {
+          label: 'Draw a picture',
+          value: 'draw',
+        },
+        {
+          label: 'Check some knowledge',
+          value: 'knowledge',
+        },
+      ],
     },
 
     welcome: {
