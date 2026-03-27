@@ -304,6 +304,11 @@ export interface IAgentScopeRuntimeWebUISessionOptions {
    */
   multiple?: boolean;
   /**
+   * @description 隐藏内置的会话列表面板，由外部自行实现
+   * @descriptionEn Hide the built-in session list panel, allowing external custom implementation
+   */
+  hideBuiltInSessionList?: boolean;
+  /**
    * @description 会话 API 接口
    * @descriptionEn Session API interface
    */
