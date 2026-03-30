@@ -24,7 +24,7 @@ export default function AgentScopeRuntimeResponseCard(props: {
   if (!messages?.length && AgentScopeRuntimeResponseBuilder.maybeGenerating(props.data)) return <Bubble.Spin />;
 
   return <>
-    {avatar && <Flex align="center" gap={8}>
+    {avatar && <Flex align="center" gap={8} style={{ marginBottom: 8 }}>
       <Avatar src={avatar} />
       {nick && <span>{nick as string}</span>}
     </Flex>}

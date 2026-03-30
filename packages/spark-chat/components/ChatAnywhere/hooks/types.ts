@@ -192,6 +192,11 @@ export interface IChatAnywhereConfigOnInput {
    * ]
    */
   suggestions?: { label?: string | React.ReactNode; value: string }[];
+  /**
+   * @description 是否允许在输入框为空时提交，默认值为 true（仍需存在可提交附件）
+   * @descriptionEn Whether to allow submission when the input field is empty, defaults to true (submittable files are still required)
+   */
+  allowEmptySubmit?: boolean;
 }
 
 export interface IChatAnywhereConfigOnUpload {

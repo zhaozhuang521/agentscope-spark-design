@@ -379,7 +379,7 @@ export default forwardRef(function (_, ref) {
         maxLength={onInput.maxLength}
         disabled={fileLoading || inputContext.disabled}
         sendDisabled={sendDisabled}
-        allowEmptySubmit={hasSubmittableFiles}
+        allowEmptySubmit={(onInput.allowEmptySubmit ?? true) && hasSubmittableFiles}
         header={senderHeader}
         prefix={<>
           {uploadPrefixNodes}

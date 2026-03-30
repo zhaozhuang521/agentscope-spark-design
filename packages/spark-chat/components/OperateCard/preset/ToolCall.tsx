@@ -14,7 +14,7 @@ function Block(props: {
 }) {
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('operate-card');
-  const { expandEnabled = true, language = 'json' } = props;
+  const { expandEnabled = false, language = 'json' } = props;
   const contentString = typeof props.content === 'string' ? props.content : JSON.stringify(props.content);
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(expandEnabled === true ? false : true);
@@ -97,19 +97,14 @@ export interface IToolCallProps {
    * @default false
    */
   loading?: boolean;
-  /**
-   * @description 是否简单模式，该模式下收起态没有背景色，同时子级内容默认展开
-   * @descriptionEn Whether is simple mode, the mode is collapsed without background color, and the child content is expanded by default
-   * @default false
-   */
-  simple?: boolean;
+  
   outputBlock?: { language?: 'json' | 'text' }
   inputBlock?: { language?: 'json' | 'text' }
 }
 
 export default function (props: IToolCallProps) {
 
-  const { title = 'Call Tool', subTitle, defaultOpen = true, loading = false, simple = false } = props;
+  const { title = 'Call Tool', subTitle, defaultOpen = true, loading = false } = props;
 
   return <OperateCard
 
@@ -117,14 +112,13 @@ export default function (props: IToolCallProps) {
       icon: loading ? <SparkLoadingLine spin /> : <SparkToolLine />,
       title: title,
       description: subTitle,
-      simple: simple,
     }}
 
     body={{
       defaultOpen: defaultOpen,
       children: <OperateCard.LineBody>
-        <Block title="Input" content={props.input} expandEnabled={!simple} language={props.inputBlock?.language} />
-        <Block title="Output" content={props.output} expandEnabled={!simple} language={props.outputBlock?.language} />
+        <Block title="Input" content={props.input} language={props.inputBlock?.language} />
+        <Block title="Output" content={props.output} language={props.outputBlock?.language} />
       </OperateCard.LineBody>
     }}
   >

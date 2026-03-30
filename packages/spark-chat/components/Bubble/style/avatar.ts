@@ -5,7 +5,7 @@ export default createGlobalStyle`
   display: inline-flex;
   justify-content: center;
   align-self: flex-start;
-  margin-right: 6px;
+  margin-bottom: 8px;
 
   .${(p) => p.theme.prefixCls}-avatar {
     background-color: ${(p) => p.theme.colorFillSecondary};
