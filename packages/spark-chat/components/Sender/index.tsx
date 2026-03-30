@@ -477,18 +477,6 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     }
   };
 
-  // ============================ Focus =============================
-  const onContentMouseDown: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    // If input focused but click on the container,
-    // input will lose focus.
-    // We call `preventDefault` to prevent this behavior
-    if (e.target !== containerRef.current?.querySelector(`.${inputCls}`)) {
-      e.preventDefault();
-    }
-
-    inputRef.current?.focus();
-  };
-
   const prefix = React.useMemo(() => {
     const nodes = Array.isArray(props.prefix) ? [...props.prefix] : [props.prefix];
     return nodes.filter((node): node is React.ReactNode => node !== undefined && node !== null);
