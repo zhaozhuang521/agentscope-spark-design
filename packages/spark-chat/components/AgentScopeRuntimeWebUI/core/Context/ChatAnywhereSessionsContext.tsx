@@ -73,6 +73,13 @@ export const useChatAnywhereSessionLoader = () => {
   }, [currentSessionId]);
 };
 
+/**
+ * 获取会话列表的 reactive 状态，供外部自定义会话面板使用
+ */
+export const useChatAnywhereSessionsState = () => {
+  return useContextSelector(ChatAnywhereSessionsContext, v => v);
+};
+
 export const useChatAnywhereSessions = () => {
   const {
     setSessions,

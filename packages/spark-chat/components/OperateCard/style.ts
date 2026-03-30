@@ -3,27 +3,24 @@ import { createGlobalStyle } from 'antd-style';
 export default createGlobalStyle`
 .${(p) => p.theme.prefixCls}-operate-card {
   width: 100%;
-
-  &-simple-collapsed {
-    width: auto;
-    display: inline-flex;
-    background-color: transparent;
-
-    .${(p) => p.theme.prefixCls}-operate-card-header {
-      padding: 0;
-      height: auto;
-    }
-  }
   border-radius: ${(p) => p.theme.borderRadiusLG}px;
   overflow: hidden;
-  background-color: ${(p) => p.theme.colorFillTertiary};
+  
+  &-collapsed {
+    background-color: ${(p) => p.theme.colorFillTertiary};
+  }
+
+  &:hover {
+    background-color: ${(p) => p.theme.colorFillTertiary};
+  }
 
   &-header {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 0 12px;
-    height: 32px;
+    height: 28px;
+    line-height: 28px;
 
     &-icon {
       font-size: 16px;
@@ -33,8 +30,7 @@ export default createGlobalStyle`
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
       color: ${(p) => p.theme.colorText};
     }
 
@@ -47,11 +43,26 @@ export default createGlobalStyle`
     }
 
     &-arrow {
-      margin: 0 0 0 auto;
+      opacity: 0;
     }
 
     &-has-body {
       cursor: pointer;
+    }
+
+
+  }
+
+  &-collapsed {
+    .${(p) => p.theme.prefixCls}-operate-card-header-arrow {
+      opacity: 1;
+    }
+  }
+
+
+  &:hover {
+    .${(p) => p.theme.prefixCls}-operate-card-header-arrow {
+      opacity: 1;
     }
   }
 
@@ -73,7 +84,7 @@ export default createGlobalStyle`
 
 
   &-line-body {
-    margin: 0 12px 12px 20px;
+    margin: 0 12px 8px 20px;
     border-left: 1px solid ${(p) => p.theme.colorBorderSecondary};
   }
 
@@ -310,6 +321,14 @@ export default createGlobalStyle`
       align-items: center;
       cursor: pointer;
       background-color: ${(p) => p.theme.colorFillTertiary};
+
+      &-text {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     &-content {
