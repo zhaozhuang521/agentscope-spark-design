@@ -221,6 +221,47 @@ function getComponent<T>(
   return getValue(components, path) || defaultComponent;
 }
 
+function getSlashCommandKeyword(inputValue: string): string | null {
+  if (!inputValue.startsWith('/')) {
+    return null;
+  }
+
+  const contentAfterSlash = inputValue.slice(1);
+  if (!contentAfterSlash) {
+    return '';
+  }
+
+  // Only keep suggestion mode before the first whitespace.
+  if (/\s/.test(contentAfterSlash)) {
+    return null;
+  }
+
+  return contentAfterSlash.trim().toLowerCase();
+}
+
+function filterSuggestionsByKeyword(
+  suggestions: SenderProps['suggestions'] | undefined,
+  keyword: string | null,
+): SuggestionItems | undefined {
+  if (!Array.isArray(suggestions) || suggestions.length === 0) {
+    return suggestions as SuggestionItems | undefined;
+  }
+
+  if (keyword === null || keyword === '') {
+    return suggestions as SuggestionItems;
+  }
+
+  return suggestions.filter((item) => {
+    const valueText = typeof item.value === 'string' ? item.value.toLowerCase() : '';
+    const labelText =
+      typeof item.label === 'string' || typeof item.label === 'number'
+        ? String(item.label).toLowerCase()
+        : '';
+
+    return valueText.includes(keyword) || labelText.includes(keyword);
+  }) as SuggestionItems;
+}
+
 const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
   const {
     styles = {},
@@ -327,6 +368,12 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     triggerValueChange(`${innerValue} ${transcript}`);
   }, allowSpeech);
   const hasSuggestions = Array.isArray(suggestions) && suggestions.length > 0;
+  const slashCommandKeyword = React.useMemo(() => getSlashCommandKeyword(innerValue), [innerValue]);
+
+  const filteredSuggestions = React.useMemo(() => {
+    return filterSuggestionsByKeyword(suggestions, slashCommandKeyword);
+  }, [suggestions, slashCommandKeyword]);
+  const hasFilteredSuggestions = Array.isArray(filteredSuggestions) && filteredSuggestions.length > 0;
 
   const findSuggestionValueByLabel = React.useCallback((items: SuggestionItems | undefined, label: string): string | undefined => {
     if (!items?.length) {
@@ -505,9 +552,14 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
           );
 
           if (hasSuggestions) {
-            if (nextValue === '/') {
-              suggestionProps?.onTrigger?.();
-            } else if (!nextValue) {
+            const nextSlashCommandKeyword = getSlashCommandKeyword(nextValue);
+            const nextFilteredSuggestions = filterSuggestionsByKeyword(suggestions, nextSlashCommandKeyword);
+            const nextHasFilteredSuggestions =
+              Array.isArray(nextFilteredSuggestions) && nextFilteredSuggestions.length > 0;
+
+            if (nextSlashCommandKeyword !== null && nextHasFilteredSuggestions) {
+              suggestionProps?.onTrigger?.(true);
+            } else {
               suggestionProps?.onTrigger?.(false);
             }
           }
@@ -562,7 +614,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
       <div className={`${prefixCls}-content`}>
         {hasSuggestions ? (
           <Suggestion
-            items={suggestions as SuggestionItems}
+            items={filteredSuggestions}
             onSelect={(itemValue) => {
               triggerValueChange(`/${itemValue} `);
             }}
