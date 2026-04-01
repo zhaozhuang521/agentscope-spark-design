@@ -430,8 +430,14 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
     isCompositionRef.current = true;
   };
 
-  const onInternalCompositionEnd = () => {
+  const onInternalCompositionEnd = (e: React.CompositionEvent<HTMLTextAreaElement>) => {
     isCompositionRef.current = false;
+    if (props.maxLength) {
+      const currentValue = (e.target as HTMLTextAreaElement).value;
+      if (currentValue.length > props.maxLength) {
+        triggerValueChange(currentValue.slice(0, props.maxLength));
+      }
+    }
   };
 
   const onInternalPressEnter: TextareaProps['onPressEnter'] = (e) => {
@@ -533,7 +539,10 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
         autoSize={autoSize}
         value={innerValue.slice(0, props.maxLength || Number.MAX_SAFE_INTEGER)}
         onChange={(event) => {
-          const nextValue = (event.target as HTMLTextAreaElement).value;
+          let nextValue = (event.target as HTMLTextAreaElement).value;
+          if (props.maxLength && !isCompositionRef.current && nextValue.length > props.maxLength) {
+            nextValue = nextValue.slice(0, props.maxLength);
+          }
           triggerValueChange(
             nextValue,
             event as React.ChangeEvent<HTMLTextAreaElement>,
@@ -639,7 +648,7 @@ const ForwardSender = React.forwardRef<SenderRef, SenderProps>((props, ref) => {
           >
             {
               props.maxLength ? <div className={`${actionListCls}-length`}>
-                {innerValue.length}/{props.maxLength}
+                {Math.min(innerValue.length, props.maxLength)}/{props.maxLength}
               </div> : null
             }
             <ActionButtonContext.Provider
