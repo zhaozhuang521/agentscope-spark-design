@@ -43,8 +43,8 @@ const config: IAgentScopeRuntimeWebUIOptions = {
     ],
   },
   api: {
-    baseURL: 'https://highcodnvvwbdks-ptzchpamaz.cn-beijing.fcapp.run/process',
-    token: '32a3e4da-528a-462d-a270-74b10cb21d75',
+    baseURL: 'https://fake-api.cn-beijing.fcapp.run/process',
+    token: 'fake-token',
     enableHistoryMessages: true,
   },
 };
