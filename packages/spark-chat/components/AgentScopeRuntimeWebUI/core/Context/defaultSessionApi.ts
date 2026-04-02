@@ -48,9 +48,14 @@ function createStorageSessionStore(multiple: boolean) {
   return {
     async getSessionList() {
       load();
-      if (!multiple && sessionList.length > 1) {
-        sessionList = sessionList.slice(0, 1);
-        persist();
+      if (!multiple) {
+        if (sessionList.length === 0) {
+          sessionList = [normalizeSession({})];
+          persist();
+        } else if (sessionList.length > 1) {
+          sessionList = sessionList.slice(0, 1);
+          persist();
+        }
       }
       return [...sessionList];
     },
