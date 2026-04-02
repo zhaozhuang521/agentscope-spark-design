@@ -66,7 +66,8 @@ export default function useChatRequest(options: UseChatRequestOptions) {
     });
 
     if (!response.ok) {
-      response.json().then(data => {
+      try {
+        const data = await response.json();
         const res = agentScopeRuntimeResponseBuilder.handle({
           object: 'message',
           type: AgentScopeRuntimeMessageType.ERROR,
@@ -84,8 +85,10 @@ export default function useChatRequest(options: UseChatRequestOptions) {
             data: res,
           }
         ];
-        onFinish();
-      });
+      } catch {
+        // Ignore JSON parse errors — still call onFinish to reset loading state
+      }
+      onFinish();
       return;
     }
 
