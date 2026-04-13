@@ -3,10 +3,9 @@ import type { BubbleProps } from './interface';
 import ScrollToBottom from './ScrollToBottom';
 import Style from './style/list';
 import { useProviderContext } from '@agentscope-ai/chat';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import cls from 'classnames';
-import { useInViewport, useMount, usePrevious } from 'ahooks';
-import { usePaginationItems } from './hooks/usePaginationItemsData';
+import { useInViewport, usePrevious } from 'ahooks';
 import { Spin } from 'antd';
 
 export interface BubbleListRef {
@@ -43,8 +42,17 @@ export interface BubbleListProps extends React.HTMLAttributes<HTMLDivElement> {
     wrapper?: string;
     list?: string;
   };
-  pagination?: boolean;
   order?: 'asc' | 'desc';
+  /**
+   * @description 后端分页加载更多的回调函数，提供时将开启分页模式
+   * @descriptionEn Callback for backend pagination load-more. When provided, pagination mode is enabled
+   */
+  onLoadMore?: () => Promise<void>;
+  /**
+   * @description 是否还有更多数据，配合 onLoadMore 使用
+   * @descriptionEn Whether there is more data, used together with onLoadMore
+   */
+  noMore?: boolean;
 }
 
 interface BubbleListContentProps {
@@ -55,16 +63,30 @@ interface BubbleListContentProps {
   scrollRef: React.RefObject<HTMLElement | null>;
   listClassName?: string;
   children?: React.ReactNode | React.ReactNode[];
+  onLoadMoreStart?: () => void;
+  onLoadMoreEnd?: () => void;
 }
 
-function BubbleListContent({ order, paginationItems, noMore, loadMore, scrollRef, children }: BubbleListContentProps) {
+function BubbleListContent(props: BubbleListContentProps) {
+  const { order, paginationItems, noMore, loadMore, scrollRef, children, onLoadMoreStart, onLoadMoreEnd } = props;
   const handleLoadMore = useCallback(() => {
     return loadMore(scrollRef);
   }, [loadMore, scrollRef]);
 
+  const moreUI = useMemo(() => {
+    if (noMore) return null;
+    return (
+      <LoadMore
+        handleLoadMore={handleLoadMore}
+        onLoadMoreStart={onLoadMoreStart}
+        onLoadMoreEnd={onLoadMoreEnd}
+      />
+    );
+  }, [handleLoadMore, onLoadMoreStart, onLoadMoreEnd, noMore]);
+
   return (
     <>
-      {order === 'asc' && !noMore ? <LoadMore handleLoadMore={handleLoadMore} /> : null}
+      {order === 'asc' && !noMore ? moreUI : null}
       {children ? children : paginationItems.map(({ key, ...bubble }, index) => {
         const isLast = index === paginationItems.length - 1;
         return (
@@ -75,30 +97,59 @@ function BubbleListContent({ order, paginationItems, noMore, loadMore, scrollRef
           />
         )
       })}
-      {order === 'desc' && !noMore ? <LoadMore handleLoadMore={handleLoadMore} /> : null}
+      {order === 'desc' && !noMore ? moreUI : null}
     </>
   );
 }
 
-function LoadMore({ handleLoadMore }: { handleLoadMore: () => Promise<void> }) {
+interface LoadMoreProps {
+  handleLoadMore: () => Promise<void>;
+  onLoadMoreStart?: () => void;
+  onLoadMoreEnd?: () => void;
+}
+
+function LoadMore({ handleLoadMore, onLoadMoreStart, onLoadMoreEnd }: LoadMoreProps) {
   const ref = useRef(null);
   const [inViewport] = useInViewport(ref)
-  const [loading, setLoading] = useState(false)
+  const loadingRef = useRef(false)
+  const mountedRef = useRef(true)
+  const inViewportRef = useRef(inViewport)
   const previousInViewport = usePrevious(inViewport)
   const { getPrefixCls } = useProviderContext();
   const prefixCls = getPrefixCls('bubble-list');
 
   useEffect(() => {
-    if (inViewport && previousInViewport === undefined) return;
-    if (loading) return;
-    if (inViewport) {
-      setLoading(true);
-      handleLoadMore().finally(() => {
-        setLoading(false);
-      });
-    }
+    inViewportRef.current = inViewport;
+  }, [inViewport]);
 
-  }, [previousInViewport, inViewport, loading, handleLoadMore])
+  useEffect(() => {
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  const doLoad = useCallback(() => {
+    if (!mountedRef.current || loadingRef.current) return;
+    loadingRef.current = true;
+    onLoadMoreStart?.();
+    handleLoadMore().finally(() => {
+      loadingRef.current = false;
+      onLoadMoreEnd?.();
+      // If spinner is still visible after load (container not yet scrollable),
+      // schedule another load via rAF so React can process noMore state first.
+      requestAnimationFrame(() => {
+        if (mountedRef.current && inViewportRef.current) {
+          doLoad();
+        }
+      });
+    });
+  }, [handleLoadMore, onLoadMoreStart, onLoadMoreEnd]);
+
+  useEffect(() => {
+    if (!inViewport && previousInViewport === undefined) return;
+    if (loadingRef.current) return;
+    if (inViewport) {
+      doLoad();
+    }
+  }, [previousInViewport, inViewport, doLoad])
 
   return <div ref={ref} className={`${prefixCls}-load-more`}><Spin spinning={true} /></div>
 }
@@ -169,14 +220,11 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
   }), [scrollToBottom]);
 
 
-  const { items: paginationItems, noMore, loadMore } = usePaginationItems(items, {
-    enable: props.pagination,
-    order,
-  });
-
-  useEffect(() => {
-    scrollToBottom('auto');
-  }, [items.length, scrollToBottom]);
+  const noMore = props.noMore ?? true;
+  const loadMore = useCallback(
+    (_scrollRef?: React.RefObject<HTMLElement | null>) => props.onLoadMore?.() ?? Promise.resolve(),
+    [props.onLoadMore],
+  );
 
 
   useEffect(() => {
@@ -214,7 +262,7 @@ const BubbleList: React.ForwardRefRenderFunction<BubbleListRef, BubbleListProps>
         }
         <BubbleListContent
           order={order}
-          paginationItems={paginationItems}
+          paginationItems={items}
           noMore={noMore}
           loadMore={loadMore}
           scrollRef={scrollRef as React.RefObject<HTMLElement | null>}

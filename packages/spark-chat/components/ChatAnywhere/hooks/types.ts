@@ -69,6 +69,11 @@ export interface TMessage {
    * @descriptionEn Processing status of the message, affects display effects
    */
   msgStatus?: 'finished' | 'interrupted' | 'generating' | 'error';
+  /**
+   * @description 是否为历史消息（session 加载时存在），供前端分页使用
+   * @descriptionEn Whether the message is a historical message (existed at session load), used for frontend pagination
+   */
+  history?: boolean;
 }
 
 export interface IChatAnywhereConfigUIConfig {
@@ -107,17 +112,6 @@ export interface IChatAnywhereConfigUIConfig {
    * @descriptionEn Disclaimer component or text
    */
   disclaimer?: React.ReactElement | string;
-  /**
-   * @description 气泡列表的配置
-   * @descriptionEn Bubble list configuration
-   */
-  bubbleList?: {
-    /**
-     * @description 是否启用分页
-     * @descriptionEn Whether to enable pagination
-     */
-    pagination?: boolean;
-  };
 }
 
 export interface IChatAnywhereConfigOnInput {
@@ -152,6 +146,11 @@ export interface IChatAnywhereConfigOnInput {
    */
   header?: React.ReactElement | React.ReactElement[];
   /**
+   * @description 输入框底部组件
+   * @descriptionEn Input field footer components
+   */
+  footer?: React.ReactNode;
+  /**
    * @description 是否启用用户focus时展开输入框组件
    * @descriptionEn Whether to enable the user focus to expand the input box component
    */
@@ -161,6 +160,11 @@ export interface IChatAnywhereConfigOnInput {
    * @descriptionEn Callback function when submitting messages
    */
   onSubmit(data: { query: string; fileList?: UploadFile[][] }): void;
+  /**
+   * @description 输入内容变化时的回调函数
+   * @descriptionEn Callback function when input content changes
+   */
+  onChange?(data: { query: string; fileList?: UploadFile[][] }): void;
   /**
    * @description 输入内容的最大长度限制
    * @descriptionEn Maximum length limit for input content
@@ -197,6 +201,8 @@ export interface IChatAnywhereConfigOnInput {
    * @descriptionEn Whether to allow submission when the input field is empty, defaults to true (submittable files are still required)
    */
   allowEmptySubmit?: boolean;
+
+
 }
 
 export interface IChatAnywhereConfigOnUpload {
@@ -296,6 +302,14 @@ export interface IChatAnywhereConfig {
    * @descriptionEn Configuration options for file upload functionality
    */
   onUpload?: IChatAnywhereConfigOnUpload[];
+  /**
+   * @description 加载更多消息的回调函数
+   * @descriptionEn Callback function for loading more messages
+   */
+  onLoadMore?(): Promise<{
+    messages: TMessage[];
+    noMore: boolean;
+  }>;
 }
 
 export interface IChatAnywhereRef extends IChatAnywhereContext {
